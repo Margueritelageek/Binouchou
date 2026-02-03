@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pour Aubin 💘</title>
-  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v4)" />
+  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v5)" />
   <style>
     :root{ --bg:#101018; --card:#181828; --accent:#ff4d6d; --accent2:#ffd6e0; --accent3:#6df3ff; --text:#f6f6f9; --muted:#b4b4c7; --success:#38d39f; --warning:#ffd166; --radius:18px; }
     *{box-sizing:border-box}
@@ -47,7 +47,7 @@
     .puzzle-cell{display:flex; align-items:center; justify-content:center; height:38px; background:rgba(255,255,255,.04); border-radius:8px; border:1px solid rgba(255,255,255,.06); cursor:pointer}
     .puzzle-cell.reveal{background:rgba(255,77,109,.14); border-color:rgba(255,77,109,.35)}
 
-     /* Maze */
+    /* Maze */
     .maze{display:grid; grid-template-columns:repeat(10,28px); grid-auto-rows:28px; gap:4px; padding:8px; border:1px solid rgba(255,255,255,.1); border-radius:12px; width:max-content; background:rgba(255,255,255,.03)}
     .cell{width:28px; height:28px; border-radius:6px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)}
     .wall{background:rgba(255,255,255,.12)}
@@ -70,7 +70,7 @@
   <div class="wrap">
     <header>
       <h1>Pour toi, <span id="name">Aubin</span> <span class="tag">aka Binouchou</span> 💘</h1>
-      <p class="lead">Une petite surprise romantique & fun rien que pour toi…</p>
+    <p class="lead">Une petite surprise romantique & fun rien que pour toi…</p>
       <button class="btn" id="startBtn">Lancer la surprise</button>
     </header>
 
@@ -91,11 +91,11 @@
     <section id="escape" class="card" style="margin-top:16px">
       <div class="progress"><div class="bar" id="bar" style="width:0%"></div></div>
       <h2>Mini‑jeu romantique</h2>
-      <p class="muted">Cinq petites épreuves pour débloquer ta surprise finale 💝</p>
+      <p class="muted">Quatre petites épreuves pour débloquer ta surprise finale 💝</p>
 
       <!-- Step 1 -->
       <div id="step1" class="step active">
-        <h3>Épreuve 1/5 — Cœur **vraiment** caché 🕵️‍♀️</h3>
+        <h3>Épreuve 1/4 — Cœur **vraiment** caché 🕵️‍♀️</h3>
         <p class="hint">Clique sur les cases pour le dénicher. Indices « Chaud/Froid ». <strong>8 essais</strong> max.</p>
         <div class="puzzle-area" id="grid"></div>
         <p id="res1" class="muted"></p>
@@ -103,7 +103,7 @@
 
       <!-- Step 2 -->
       <div id="step2" class="step">
-        <h3>Épreuve 2/5 — Notre premier bisou 😘</h3>
+        <h3>Épreuve 2/4 — Notre premier bisou 😘</h3>
         <p class="hint">Entre la date (ex: 17/11/2024). <span class="muted">(format souple)</span></p>
         <div class="center">
           <input id="dateInput" type="text" placeholder="jj/mm/aaaa" inputmode="numeric" />
@@ -114,7 +114,7 @@
 
       <!-- Step 3 -->
       <div id="step3" class="step">
-        <h3>Épreuve 3/5 — Desperate Housewives 📺</h3>
+        <h3>Épreuve 3/4 — Desperate Housewives 📺</h3>
         <p class="hint">Dans **quelle saison** a lieu l’épisode de la <strong>tornade</strong> qui frappe Wisteria Lane ?</p>
         <div class="radio">
           <label><input type="radio" name="qdh" value="A"> Saison 3</label>
@@ -125,12 +125,12 @@
         <p id="res3" class="muted"></p>
       </div>
 
-      <!-- Step 5: Mini labyrinthe -->
-      <div id="step5" class="step">
-        <h3>Épreuve 5/5 — Mini labyrinthe 💞</h3>
+      <!-- Step 4: Mini labyrinthe -->
+      <div id="step4" class="step">
+        <h3>Épreuve 4/4 — Mini labyrinthe 💞</h3>
         <p class="hint">Atteins le cœur avec les <strong>flèches du clavier</strong>.</p>
         <div class="maze" id="maze"></div>
-        <p id="res5" class="muted"></p>
+        <p id="res4" class="muted"></p>
       </div>
 
       <!-- Final -->
@@ -147,8 +147,7 @@
     // Config
     const CONFIG = {
       partnerName: 'Aubin', fromName: 'Marguerite', revealAt: '2026-02-14T19:30:00',
-      escape: { expectedDate: '17/11/2024', maxTries: 8, correctSeason: 'B' },
-      photoURL: 'https://images.unsplash.com/photo-1520975682031-ae3f0391f7f4?q=80&w=1200'
+      escape: { expectedDate: '17/11/2024', maxTries: 8, correctSeason: 'B' }
     };
 
     // Typewriter
@@ -193,9 +192,9 @@
     function normalizeDate(s){ return (s||'').toString().toLowerCase().replace(/[^0-9]/g,''); }
 
     // Steps logic
-    const stepIds = ['step1','step2','step3','step4','step5','stepFinal'];
+    const stepIds = ['step1','step2','step3','step4','stepFinal'];
     let current = 0;
-    function setStep(i){ stepIds.forEach((id,idx)=>{ document.getElementById(id).classList.toggle('active', idx===i); }); current=i; const total=stepIds.length-1; document.getElementById('bar').style.width = Math.min(100, i*100/total)+'%'; }
+    function setStep(i){ stepIds.forEach((id,idx)=>{ document.getElementById(id).classList.toggle('active', idx===i); }); current=i; const total=stepIds.length-1; document.getElementById('bar').style.width = Math.min(100, Math.round(i*100/total))+'%'; }
     function next(){ setStep(Math.min(current+1, stepIds.length-1)); }
 
     // Step1: hidden heart
@@ -225,12 +224,12 @@
     // Step3: DH season
     function onCheckDH(){ const picked = document.querySelector('input[name="qdh"]:checked'); const res = document.getElementById('res3'); if(!picked){ res.textContent='Choisis une saison 😇'; return; } if(picked.value===CONFIG.escape.correctSeason){ res.innerHTML='<span class="ok">Exact : saison 4 !</span>'; launchConfetti(); next(); } else { res.innerHTML='<span class="warn">Pas tout à fait…</span>'; } }
 
-    // Step5: Mini maze
+    // Step4: Mini maze
     function initMaze(){
       const maze = document.getElementById('maze'); maze.innerHTML='';
       const W=10, H=7; const walls = new Set([ '2,0','2,1','2,2','2,3','4,3','5,3','6,3','7,3','7,4','7,5','3,5','4,5','5,5' ]);
       let px=0, py=0; const gx=9, gy=6;
-      function key(e){ const k=e.key; let nx=px, ny=py; if(k==='ArrowRight') nx++; else if(k==='ArrowLeft') nx--; else if(k==='ArrowDown') ny++; else if(k==='ArrowUp') ny--; else return; e.preventDefault(); if(nx<0||nx>=W||ny<0||ny>=H) return; if(walls.has(nx+','+ny)) return; px=nx; py=ny; draw(); if(px===gx&&py===gy){ document.getElementById('res5').innerHTML='<span class="ok">Bravo !</span>'; launchConfetti(); next(); window.removeEventListener('keydown', key); } }
+      function key(e){ const k=e.key; let nx=px, ny=py; if(k==='ArrowRight') nx++; else if(k==='ArrowLeft') nx--; else if(k==='ArrowDown') ny++; else if(k==='ArrowUp') ny--; else return; e.preventDefault(); if(nx<0||nx>=W||ny<0||ny>=H) return; if(walls.has(nx+','+ny)) return; px=nx; py=ny; draw(); if(px===gx&&py===gy){ document.getElementById('res4').innerHTML='<span class="ok">Bravo !</span>'; launchConfetti(); next(); window.removeEventListener('keydown', key); } }
       function draw(){ maze.innerHTML=''; for(let y=0;y<H;y++){ for(let x=0;x<W;x++){ const c=document.createElement('div'); c.className='cell'; if(walls.has(x+','+y)) c.classList.add('wall'); if(x===px&&y===py) c.classList.add('player'); if(x===gx&&y===gy) c.classList.add('goal'); maze.appendChild(c); } } }
       window.addEventListener('keydown', key); draw();
     }
