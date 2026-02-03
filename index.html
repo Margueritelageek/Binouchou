@@ -47,12 +47,7 @@
     .puzzle-cell{display:flex; align-items:center; justify-content:center; height:38px; background:rgba(255,255,255,.04); border-radius:8px; border:1px solid rgba(255,255,255,.06); cursor:pointer}
     .puzzle-cell.reveal{background:rgba(255,77,109,.14); border-color:rgba(255,77,109,.35)}
 
-    /* Photo puzzle (3x2) */
-    .photo-wrap{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; border:1px solid rgba(255,255,255,.1); padding:6px; border-radius:12px}
-    .tile{position:relative; width:100%; padding-top:66.66%; background-size:300% 200%; background-repeat:no-repeat; border-radius:10px; border:1px solid rgba(255,255,255,.1); cursor:pointer; overflow:hidden}
-    .tile.sel{outline:3px solid var(--accent)}
-
-    /* Maze */
+     /* Maze */
     .maze{display:grid; grid-template-columns:repeat(10,28px); grid-auto-rows:28px; gap:4px; padding:8px; border:1px solid rgba(255,255,255,.1); border-radius:12px; width:max-content; background:rgba(255,255,255,.03)}
     .cell{width:28px; height:28px; border-radius:6px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)}
     .wall{background:rgba(255,255,255,.12)}
