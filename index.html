@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pour Aubin 💘</title>
-  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v5)" />
+  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v6)" />
   <style>
     :root{ --bg:#101018; --card:#181828; --accent:#ff4d6d; --accent2:#ffd6e0; --accent3:#6df3ff; --text:#f6f6f9; --muted:#b4b4c7; --success:#38d39f; --warning:#ffd166; --radius:18px; }
     *{box-sizing:border-box}
@@ -47,6 +47,11 @@
     .puzzle-cell{display:flex; align-items:center; justify-content:center; height:38px; background:rgba(255,255,255,.04); border-radius:8px; border:1px solid rgba(255,255,255,.06); cursor:pointer}
     .puzzle-cell.reveal{background:rgba(255,77,109,.14); border-color:rgba(255,77,109,.35)}
 
+    /* Starfield for SW */
+    .space{position:relative; border-radius:12px; border:1px solid rgba(255,255,255,.1); padding:10px; display:grid; grid-template-columns:repeat(12, minmax(16px,1fr)); gap:6px; min-height:160px}
+    .star{height:20px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.85) 0%, rgba(255,255,255,.4) 35%, rgba(255,255,255,.08) 70%); box-shadow:0 0 8px rgba(255,255,255,.25); cursor:pointer}
+    .star.hit{background:radial-gradient(circle, #67d7ff 0%, #00aaff 40%, rgba(103,215,255,.2) 70%); box-shadow:0 0 12px rgba(0,170,255,.7)}
+
     /* Maze */
     .maze{display:grid; grid-template-columns:repeat(10,28px); grid-auto-rows:28px; gap:4px; padding:8px; border:1px solid rgba(255,255,255,.1); border-radius:12px; width:max-content; background:rgba(255,255,255,.03)}
     .cell{width:28px; height:28px; border-radius:6px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)}
@@ -70,7 +75,7 @@
   <div class="wrap">
     <header>
       <h1>Pour toi, <span id="name">Aubin</span> <span class="tag">aka Binouchou</span> 💘</h1>
-    <p class="lead">Bienvenue dans l'Escape Game du Love 💘</p>
+      <p class="lead">Bienvenue dans l'Escape Game du Love 💘</p>
       <button class="btn" id="startBtn">Activer la Love Bomb</button>
     </header>
 
@@ -91,11 +96,11 @@
     <section id="escape" class="card" style="margin-top:16px">
       <div class="progress"><div class="bar" id="bar" style="width:0%"></div></div>
       <h2>Mini‑Escape Game du Love</h2>
-      <p class="muted">Quatre petites épreuves pour débloquer ta surprise finale 💝</p>
+      <p class="muted">Six petites épreuves pour débloquer ta surprise finale 💝</p>
 
       <!-- Step 1 -->
       <div id="step1" class="step active">
-        <h3>Épreuve 1/4 — Cœur caché 🕵️‍♀️: pas si vite loustic, tu n'as que 8 essais !</h3>
+        <h3>Épreuve 1/6 — Cœur caché 🕵️‍♀️: pas si vite loustic, tu n'as que 8 essais !</h3>
         <p class="hint">Clique sur les cases pour le dénicher. Indices « Chaud/Froid ». <strong>8 essais</strong> max.</p>
         <div class="puzzle-area" id="grid"></div>
         <p id="res1" class="muted"></p>
@@ -103,8 +108,8 @@
 
       <!-- Step 2 -->
       <div id="step2" class="step">
-        <h3>Épreuve 2/4 — Notre premier bisou 😘</h3>
-        <p class="hint">Entre la date (ex: 14/02/2004). <span class="muted">(format souple)</span></p>
+        <h3>Épreuve 2/6 — Notre premier bisou 😘</h3>
+        <p class="hint">Entre la date (ex: 17/11/2024). <span class="muted">(format souple)</span></p>
         <div class="center">
           <input id="dateInput" type="text" placeholder="jj/mm/aaaa" inputmode="numeric" />
           <button class="btn" id="checkDate">Valider</button>
@@ -114,7 +119,7 @@
 
       <!-- Step 3 -->
       <div id="step3" class="step">
-        <h3>Épreuve 3/4 — Desperate Housewives 📺</h3>
+        <h3>Épreuve 3/6 — Desperate Housewives 📺</h3>
         <p class="hint">Dans quelle saison a lieu l’épisode de la <strong>tornade</strong> qui frappe Wisteria Lane ?</p>
         <div class="radio">
           <label><input type="radio" name="qdh" value="A"> Saison 3</label>
@@ -125,12 +130,32 @@
         <p id="res3" class="muted"></p>
       </div>
 
-      <!-- Step 4: Mini labyrinthe -->
+      <!-- Step 4: STAR WARS - Trouve le sabre laser -->
       <div id="step4" class="step">
-        <h3>Épreuve 4/4 — Mini labyrinthe 💞</h3>
+        <h3>Épreuve 4/6 — Star Wars ✨ Trouve le sabre laser</h3>
+        <p class="hint">La Force t'accompagne… Clique dans le <strong>ciel étoilé</strong>. Indices <em>Hyperfroid → Froid → Tiède → Chaud → Très chaud</em>. 10 essais max.</p>
+        <div class="space" id="space"></div>
+        <p id="res4" class="muted"></p>
+      </div>
+
+      <!-- Step 5: MÉLODIE DU BONHEUR - Do Ré Mi -->
+      <div id="step5" class="step">
+        <h3>Épreuve 5/6 — La Mélodie du Bonheur 🎶</h3>
+        <p class="hint">Clique les notes dans l'ordre : <strong>Do → Ré → Mi</strong>.</p>
+        <div class="center" style="gap:8px; margin:8px 0">
+          <button class="btn" data-note="DO">Do</button>
+          <button class="btn" data-note="RE">Ré</button>
+          <button class="btn" data-note="MI">Mi</button>
+        </div>
+        <p id="res5" class="muted"></p>
+      </div>
+
+      <!-- Step 6: Mini labyrinthe -->
+      <div id="step6" class="step">
+        <h3>Épreuve 6/6 — Mini labyrinthe 💞</h3>
         <p class="hint">Atteins le cœur avec les <strong>flèches du clavier</strong>.</p>
         <div class="maze" id="maze"></div>
-        <p id="res4" class="muted"></p>
+        <p id="res6" class="muted"></p>
       </div>
 
       <!-- Final -->
@@ -192,7 +217,7 @@
     function normalizeDate(s){ return (s||'').toString().toLowerCase().replace(/[^0-9]/g,''); }
 
     // Steps logic
-    const stepIds = ['step1','step2','step3','step4','stepFinal'];
+    const stepIds = ['step1','step2','step3','step4','step5','step6','stepFinal'];
     let current = 0;
     function setStep(i){ stepIds.forEach((id,idx)=>{ document.getElementById(id).classList.toggle('active', idx===i); }); current=i; const total=stepIds.length-1; document.getElementById('bar').style.width = Math.min(100, Math.round(i*100/total))+'%'; }
     function next(){ setStep(Math.min(current+1, stepIds.length-1)); }
@@ -224,12 +249,49 @@
     // Step3: DH season
     function onCheckDH(){ const picked = document.querySelector('input[name="qdh"]:checked'); const res = document.getElementById('res3'); if(!picked){ res.textContent='Choisis une saison 😇'; return; } if(picked.value===CONFIG.escape.correctSeason){ res.innerHTML='<span class="ok">Exact : saison 4 !</span>'; launchConfetti(); next(); } else { res.innerHTML='<span class="warn">Pas tout à fait…</span>'; } }
 
-    // Step4: Mini maze
+    // Step4: Star Wars - find lightsaber
+    function initStarWars(){
+      const space = document.getElementById('space'); space.innerHTML='';
+      const cols=12, rows=8, total=cols*rows, target=Math.floor(Math.random()*total); let tries=0, maxT=10;
+      const ty=Math.floor(target/cols), tx=target%cols;
+      for(let i=0;i<total;i++){
+        const d=document.createElement('div'); d.className='star'; d.dataset.idx=i; space.appendChild(d);
+        d.addEventListener('click',()=>{
+          if(current!==3) return; // ensure step 4 active (0-based index)
+          tries++;
+          const idx=+d.dataset.idx; const y=Math.floor(idx/cols), x=idx%cols; const man=Math.abs(x-tx)+Math.abs(y-ty);
+          if(idx===target){ d.classList.add('hit'); document.getElementById('res4').innerHTML='<span class="ok">Tu as trouvé le sabre !</span>'; next(); }
+          else {
+            if(tries>=maxT){ document.getElementById('res4').innerHTML='<span class="warn">La Force s’épuise… nouvelle galaxie !</span>'; initStarWars(); }
+            else {
+              const hint = man<=1? '🔥 Très chaud' : man<=2? '✨ Chaud' : man<=4? '🌤️ Tiède' : man<=6? '💧 Froid' : '🧊 Hyperfroid';
+              document.getElementById('res4').innerHTML = `${hint} — essai ${tries}/${maxT}`;
+              d.style.opacity=0.5;
+            }
+          }
+        });
+      }
+    }
+
+    // Step5: Do-Re-Mi
+    function initMelodie(){
+      const seq=['DO','RE','MI']; let pos=0; const res=document.getElementById('res5');
+      document.querySelectorAll('#step5 [data-note]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const n=btn.getAttribute('data-note');
+          if(n===seq[pos]){ pos++; btn.style.transform='scale(1.06)'; setTimeout(()=>btn.style.transform='',150);
+            if(pos===seq.length){ res.innerHTML='<span class="ok">Parfait !</span>'; next(); }
+          } else { pos=0; res.innerHTML='<span class="warn">Oups, recommence : Do → Ré → Mi</span>'; }
+        });
+      });
+    }
+
+    // Step6: Mini maze
     function initMaze(){
       const maze = document.getElementById('maze'); maze.innerHTML='';
       const W=10, H=7; const walls = new Set([ '2,0','2,1','2,2','2,3','4,3','5,3','6,3','7,3','7,4','7,5','3,5','4,5','5,5' ]);
       let px=0, py=0; const gx=9, gy=6;
-      function key(e){ const k=e.key; let nx=px, ny=py; if(k==='ArrowRight') nx++; else if(k==='ArrowLeft') nx--; else if(k==='ArrowDown') ny++; else if(k==='ArrowUp') ny--; else return; e.preventDefault(); if(nx<0||nx>=W||ny<0||ny>=H) return; if(walls.has(nx+','+ny)) return; px=nx; py=ny; draw(); if(px===gx&&py===gy){ document.getElementById('res4').innerHTML='<span class="ok">Bravo !</span>'; launchConfetti(); next(); window.removeEventListener('keydown', key); } }
+      function key(e){ const k=e.key; let nx=px, ny=py; if(k==='ArrowRight') nx++; else if(k==='ArrowLeft') nx--; else if(k==='ArrowDown') ny++; else if(k==='ArrowUp') ny--; else return; e.preventDefault(); if(nx<0||nx>=W||ny<0||ny>=H) return; if(walls.has(nx+','+ny)) return; px=nx; py=ny; draw(); if(px===gx&&py===gy){ document.getElementById('res6').innerHTML='<span class="ok">Bravo !</span>'; launchConfetti(); next(); window.removeEventListener('keydown', key); } }
       function draw(){ maze.innerHTML=''; for(let y=0;y<H;y++){ for(let x=0;x<W;x++){ const c=document.createElement('div'); c.className='cell'; if(walls.has(x+','+y)) c.classList.add('wall'); if(x===px&&y===py) c.classList.add('player'); if(x===gx&&y===gy) c.classList.add('goal'); maze.appendChild(c); } } }
       window.addEventListener('keydown', key); draw();
     }
@@ -241,6 +303,8 @@
       buildGrid();
       document.getElementById('checkDate').addEventListener('click', onCheckDate);
       document.getElementById('checkDH').addEventListener('click', onCheckDH);
+      initStarWars();
+      initMelodie();
       initMaze();
     })();
   </script>
