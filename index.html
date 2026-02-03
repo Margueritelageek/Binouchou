@@ -42,11 +42,6 @@
     .bar{height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent3)); transition:.3s}
     .hint{font-size:13px; color:var(--muted)}
 
-    /* Step1 grid */
-    .puzzle-area{position:relative; border-radius:12px; border:1px solid rgba(255,255,255,.1); padding:14px; min-height:180px; display:grid; grid-template-columns:repeat(8,1fr); gap:6px; user-select:none}
-    .puzzle-cell{display:flex; align-items:center; justify-content:center; height:38px; background:rgba(255,255,255,.04); border-radius:8px; border:1px solid rgba(255,255,255,.06); cursor:pointer}
-    .puzzle-cell.reveal{background:rgba(255,77,109,.14); border-color:rgba(255,77,109,.35)}
-
      /* Maze */
     .maze{display:grid; grid-template-columns:repeat(10,28px); grid-auto-rows:28px; gap:4px; padding:8px; border:1px solid rgba(255,255,255,.1); border-radius:12px; width:max-content; background:rgba(255,255,255,.03)}
     .cell{width:28px; height:28px; border-radius:6px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)}
@@ -125,16 +120,7 @@
         <p id="res3" class="muted"></p>
       </div>
 
-      <!-- Step 4: Photo puzzle 3x2 -->
-      <div id="step4" class="step">
-        <h3>Épreuve 4/5 — Puzzle photo 🧩</h3>
-        <p class="hint">Remets les 6 morceaux dans le bon ordre (clique 2 cases pour <em>échanger</em>).</p>
-        <div class="photo-wrap" id="photoWrap"></div>
-        <p class="muted">💡 Tu peux remplacer l'image par la tienne en changeant l'URL dans le code (id <code>photoURL</code>).</p>
-        <p id="res4" class="muted"></p>
-      </div>
-
-      <!-- Step 5: Mini labyrinthe -->
+       <!-- Step 5: Mini labyrinthe -->
       <div id="step5" class="step">
         <h3>Épreuve 5/5 — Mini labyrinthe 💞</h3>
         <p class="hint">Atteins le cœur avec les <strong>flèches du clavier</strong>.</p>
