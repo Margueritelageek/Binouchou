@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pour Aubin 💘</title>
-  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v6.2)" />
+  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v6.4)" />
   <style>
     :root{ --bg:#101018; --card:#181828; --accent:#ff4d6d; --accent2:#ffd6e0; --accent3:#6df3ff; --text:#f6f6f9; --muted:#b4b4c7; --success:#38d39f; --warning:#ffd166; --radius:18px; }
     *{box-sizing:border-box}
@@ -29,11 +29,7 @@
     /* Hearts + 😛 burst (downward) */
     .burst-layer{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:9999; }
     .burst-item{ position:absolute; will-change:transform, opacity; font-size:24px; }
-    @keyframes floatDown{
-      0%{ transform: translate(var(--x,0), var(--y,0)) scale(0.9) rotate(0deg); opacity:0; }
-      10%{ opacity:1; }
-      100%{ transform: translate(var(--tx,0), var(--ty,120vh)) scale(1.05) rotate(var(--rot,20deg)); opacity:0; }
-    }
+    @keyframes floatDown{ 0%{ transform: translate(var(--x,0), var(--y,0)) scale(0.9) rotate(0deg); opacity:0; } 10%{ opacity:1; } 100%{ transform: translate(var(--tx,0), var(--ty,120vh)) scale(1.05) rotate(var(--rot,20deg)); opacity:0; } }
 
     /* Escape game */
     .step{display:none}
@@ -52,16 +48,16 @@
     .star{height:20px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.85) 0%, rgba(255,255,255,.4) 35%, rgba(255,255,255,.08) 70%); box-shadow:0 0 8px rgba(255,255,255,.25); cursor:pointer}
     .star.hit{background:radial-gradient(circle, #67d7ff 0%, #00aaff 40%, rgba(103,215,255,.2) 70%); box-shadow:0 0 12px rgba(0,170,255,.7)}
 
-    /* Maze (same size, more walls). Add tactile hint */
+    /* Maze */
     .maze{display:grid; grid-template-columns:repeat(10,28px); grid-auto-rows:28px; gap:4px; padding:8px; border:1px solid rgba(255,255,255,.1); border-radius:12px; width:max-content; background:rgba(255,255,255,.03); touch-action:none}
     .cell{width:28px; height:28px; border-radius:6px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)}
-    .wall{background:rgba(255,255,255,.22)}
+    .wall{background:rgba(255,255,255,.18)}
     .player{background:linear-gradient(180deg,#ffe3ea,#ff9caf); border-color:rgba(255,77,109,.45)}
     .goal{background:rgba(255,77,109,.18); position:relative}
     .goal::after{content:'❤'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center}
     .swipe-hint{font-size:12px; color:var(--muted); margin-top:6px}
 
-    /* Simon musical buttons */
+    /* Simon musical */
     .pad-wrap{display:grid; grid-template-columns:repeat(2,120px); gap:12px; margin:10px 0}
     .pad{height:120px; border-radius:14px; border:2px solid rgba(255,255,255,.15); cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:800; letter-spacing:.5px}
     .pad[data-note="DO"]{background:rgba(255,255,255,.06)}
@@ -71,6 +67,16 @@
     .pad.play{transform:scale(1.06); box-shadow:0 12px 26px rgba(0,0,0,.35); border-color:rgba(255,255,255,.4)}
     .controls{display:flex; gap:10px; align-items:center; margin-top:6px}
     .small{font-size:12px; color:var(--muted)}
+
+    /* Photo slider (replaces letter) */
+    .slider{position:relative; aspect-ratio: 4/3; width:100%; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,.1); background:#0f0f17}
+    .slide{position:absolute; inset:0; background-position:center; background-size:cover; opacity:0; transition:.6s opacity ease}
+    .slide.active{opacity:1}
+    .slider .nav{position:absolute; inset:auto 8px 8px 8px; display:flex; justify-content:space-between}
+    .slider button.navbtn{background:rgba(0,0,0,.35); color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:8px 10px; font-weight:700; cursor:pointer}
+    .dots{position:absolute; bottom:8px; left:50%; transform:translateX(-50%); display:flex; gap:6px}
+    .dot{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.35)}
+    .dot.active{background:#fff}
   </style>
 </head>
 <body>
@@ -91,25 +97,28 @@
         <iframe title="Deezer" src="https://widget.deezer.com/widget/dark/album/727556231?autoplay=true" width="100%" height="180" frameborder="0" allowtransparency="true" allow="encrypted-media; clipboard-write"></iframe>
       </div>
       <div class="card">
-        <h2>Lettre pour toi</h2>
-        <p id="letter" class="typewriter muted" style="font-size:18px; line-height:1.6">Mon Binouchou, chaque jour à tes côtés me rappelle la chance que j’ai. Merci pour ta douceur,
-          ton humour, et tout ce que nous construisons. Joyeuse Saint‑Valentin ❤️</p>
+        <h2>Photos de nous 💑</h2>
+        <p class="muted" style="margin-top:-6px">Glisse ou utilise ◀ ▶ — ajoute tes URLs dans <code>CONFIG.photos</code></p>
+        <div class="slider" id="slider">
+          <!-- slides injected by JS from CONFIG.photos -->
+          <div class="nav"><button class="navbtn" id="prev">◀</button><button class="navbtn" id="next">▶</button></div>
+          <div class="dots" id="dots"></div>
+        </div>
       </div>
     </section>
 
-    <!-- Mini Escape Game du Love -->
     <section id="escape" class="card" style="margin-top:16px">
       <div class="progress"><div class="bar" id="bar" style="width:0%"></div></div>
       <h2>Mini‑Escape Game du Love</h2>
       <p class="muted">Six petites épreuves pour débloquer ta surprise finale 💝</p>
 
-      <!-- Steps 1-5 are unchanged from your v6.1 (omitted here for brevity in comment) -->
       <div id="step1" class="step active">
         <h3>Épreuve 1/6 — Cœur caché 🕵️‍♀️: pas si vite loustic, tu n'as que 8 essais !</h3>
         <p class="hint">Clique sur les cases pour le dénicher. Indices « Chaud/Froid ». <strong>8 essais</strong> max.</p>
         <div class="puzzle-area" id="grid"></div>
         <p id="res1" class="muted"></p>
       </div>
+
       <div id="step2" class="step">
         <h3>Épreuve 2/6 — Notre premier bisou 😘</h3>
         <p class="hint">Entre la date (ex: 17/11/2024). <span class="muted">(format souple)</span></p>
@@ -117,6 +126,7 @@
           <button class="btn" id="checkDate">Valider</button></div>
         <p id="res2" class="muted"></p>
       </div>
+
       <div id="step3" class="step">
         <h3>Épreuve 3/6 — Desperate Housewives 📺</h3>
         <p class="hint">Dans quelle saison a lieu l’épisode de la <strong>tornade</strong> qui frappe Wisteria Lane ?</p>
@@ -128,15 +138,17 @@
         <button class="btn" id="checkDH">Valider</button>
         <p id="res3" class="muted"></p>
       </div>
+
       <div id="step4" class="step">
         <h3>Épreuve 4/6 — Star Wars ✨ Trouve le sabre laser</h3>
         <p class="hint">La Force t'accompagne… Clique dans le <strong>ciel étoilé</strong>. Indices <em>Hyperfroid → Froid → Tiède → Chaud → Très chaud</em>. 10 essais max.</p>
         <div class="space" id="space"></div>
         <p id="res4" class="muted"></p>
       </div>
+
       <div id="step5" class="step">
         <h3>Épreuve 5/6 — La Mélodie du Bonheur 🎶 (Simon musical)</h3>
-        <p class="hint">Répète la suite affichée par les boutons. Le niveau augmente à chaque réussite. Objectif : <strong>5</strong> !</p>
+        <p class="hint">Répète la suite affichée par les boutons. Le niveau augmente à chaque réussite. Objectif : <strong>10</strong> !</p>
         <div class="pad-wrap">
           <div class="pad" data-note="DO">DO</div>
           <div class="pad" data-note="RE">RE</div>
@@ -150,7 +162,6 @@
         <p id="res5" class="muted"></p>
       </div>
 
-      <!-- Step 6 (updated maze) -->
       <div id="step6" class="step">
         <h3>Épreuve 6/6 — Mini labyrinthe 💞</h3>
         <p class="hint">Atteins le cœur. Clavier (⬆️⬇️⬅️➡️) sur ordi, <strong>swipe</strong> sur mobile 📱</p>
@@ -168,8 +179,17 @@
   </div>
 
   <script>
-    // Config (unchanged)
-    const CONFIG = { partnerName:'Aubin', fromName:'Marguerite', revealAt:'2026-02-14T19:30:00', escape:{ expectedDate:'17/11/2024', maxTries:8, correctSeason:'B' }, simonTarget:5 };
+    const CONFIG = {
+      partnerName:'Aubin', fromName:'Marguerite', revealAt:'2026-02-14T19:30:00',
+      escape:{ expectedDate:'17/11/2024', maxTries:8, correctSeason:'B' }, simonTarget:10,
+      // >>>>>>> AJOUTE/REMPLACE tes photos ICI (URL absolues .jpg/.png/.webp) <<<<<<<
+      photos:[
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200',
+        'https://images.unsplash.com/photo-1510771463146-e89e6e86560e?q=80&w=1200',
+        'https://images.unsplash.com/photo-1520975682031-ae3f0391f7f4?q=80&w=1200'
+      ],
+      slider:{ autoplay:true, delay:3000 } // delay en ms
+    };
 
     function typewriter(el, speed=22){ const full=el.textContent.trim(); el.textContent=''; el.classList.add('typewriter'); let i=0; const t=setInterval(()=>{ el.textContent += full[i++]||''; if(i>=full.length){ el.classList.remove('typewriter'); clearInterval(t); } }, speed); }
 
@@ -181,50 +201,45 @@
 
     const stepIds=['step1','step2','step3','step4','step5','step6','stepFinal']; let current=0; function setStep(i){ stepIds.forEach((id,idx)=>document.getElementById(id).classList.toggle('active', idx===i)); current=i; const total=stepIds.length-1; document.getElementById('bar').style.width=Math.min(100, Math.round(i*100/total))+'%'; } function next(){ setStep(Math.min(current+1, stepIds.length-1)); }
 
-    // Step1: hidden heart (unchanged)
+    // Step1 grid
     function buildGrid(){ const grid=document.getElementById('grid'); grid.innerHTML=''; const cols=8, total=48; const target=Math.floor(Math.random()*total); const ty=Math.floor(target/cols), tx=target%cols; let tries=0; const maxT=CONFIG.escape.maxTries; for(let i=0;i<total;i++){ const cell=document.createElement('div'); cell.className='puzzle-cell'; cell.textContent='·'; cell.dataset.idx=i; grid.appendChild(cell); cell.addEventListener('click',()=>{ if(current!==0) return; tries++; const idx=+cell.dataset.idx; const y=Math.floor(idx/cols), x=idx%cols; const dist=Math.abs(x-tx)+Math.abs(y-ty); if(idx===target){ cell.classList.add('reveal'); cell.textContent='❤'; document.getElementById('res1').innerHTML=`<span class="ok">Trouvé en ${tries} essai(s) !</span>`; next(); } else { if(tries>=maxT){ document.getElementById('res1').innerHTML=`<span class="warn">Oups, ${maxT} essais écoulés. Nouvelle grille !</span>`; buildGrid(); } else { const hint=dist<=1?'🔥 Brûlant':dist<=2?'♨️ Chaud':dist<=4?'🌤️ Tiède':'❄️ Froid'; document.getElementById('res1').innerHTML=`${hint} — essai ${tries}/${maxT}`; cell.style.opacity=0.6; } } }); } }
 
-    // Step2
+    // Step2 date
     function onCheckDate(){ const got=normalizeDate(document.getElementById('dateInput').value); const want=normalizeDate(CONFIG.escape.expectedDate); const res=document.getElementById('res2'); if(!got){ res.textContent='Indique une date 😊'; return; } if(got===want){ res.innerHTML='<span class="ok">Parfait !</span>'; next(); } else { res.innerHTML='<span class="warn">Presque… réessaie</span>'; } }
 
-    // Step3
+    // Step3 DH
     function onCheckDH(){ const picked=document.querySelector('input[name="qdh"]:checked'); const res=document.getElementById('res3'); if(!picked){ res.textContent='Choisis une saison 😇'; return; } if(picked.value===CONFIG.escape.correctSeason){ res.innerHTML='<span class="ok">Exact : saison 4 !</span>'; launchConfetti(); next(); } else { res.innerHTML='<span class="warn">Pas tout à fait…</span>'; } }
 
-    // Step4 Star Wars (unchanged)
+    // Step4 Star Wars
     function initStarWars(){ const space=document.getElementById('space'); space.innerHTML=''; const cols=12, rows=8, total=cols*rows, target=Math.floor(Math.random()*total); let tries=0, maxT=10; const ty=Math.floor(target/cols), tx=target%cols; for(let i=0;i<total;i++){ const d=document.createElement('div'); d.className='star'; d.dataset.idx=i; space.appendChild(d); d.addEventListener('click',()=>{ if(current!==3) return; tries++; const idx=+d.dataset.idx; const y=Math.floor(idx/cols), x=idx%cols; const man=Math.abs(x-tx)+Math.abs(y-ty); if(idx===target){ d.classList.add('hit'); document.getElementById('res4').innerHTML='<span class="ok">Tu as trouvé le sabre !</span>'; next(); } else { if(tries>=maxT){ document.getElementById('res4').innerHTML='<span class="warn">La Force s’épuise… nouvelle galaxie !</span>'; initStarWars(); } else { const hint=man<=1?'🔥 Très chaud':man<=2?'✨ Chaud':man<=4?'🌤️ Tiède':man<=6?'💧 Froid':'🧊 Hyperfroid'; document.getElementById('res4').innerHTML=`${hint} — essai ${tries}/${maxT}`; d.style.opacity=0.5; } } }); } }
 
-    // Step5 Simon (unchanged from v6.1)
-    function initSimon(){ const pads=Array.from(document.querySelectorAll('#step5 .pad')); const res=document.getElementById('res5'); const playBtn=document.getElementById('playSeq'); const notes=['DO','RE','MI','FA']; let seq=[], inputPos=0, playing=false, accepting=false, target=CONFIG.simonTarget||5; function flashPad(pad, dur=420){ return new Promise(ok=>{ pad.classList.add('play'); setTimeout(()=>{ pad.classList.remove('play'); setTimeout(ok, 120); }, dur); }); } async function playSequence(){ accepting=false; playing=true; res.textContent=`Niveau ${seq.length+1}…`; for(const n of seq){ const pad=pads.find(p=>p.dataset.note===n); await flashPad(pad); } playing=false; accepting=true; inputPos=0; res.textContent=`À toi ! (${seq.length} notes)`; } function nextRound(){ seq.push(notes[Math.floor(Math.random()*notes.length)]); playSequence(); } function reset(){ seq=[]; inputPos=0; accepting=false; playing=false; } pads.forEach(p=>{ p.addEventListener('click', async ()=>{ if(!accepting||playing) return; const n=p.dataset.note; await flashPad(p,200); if(n===seq[inputPos]){ inputPos++; if(inputPos===seq.length){ if(seq.length>=target){ res.innerHTML='<span class="ok">Magnifique !</span>'; next(); } else { setTimeout(nextRound,600); } } } else { res.innerHTML='<span class="warn">Oups ! On rejoue la séquence…</span>'; setTimeout(playSequence,500); } }); }); playBtn.addEventListener('click', ()=>{ reset(); nextRound(); }); }
+    // Step5 Simon musical
+    function initSimon(){ const pads=Array.from(document.querySelectorAll('#step5 .pad')); const res=document.getElementById('res5'); const playBtn=document.getElementById('playSeq'); const notes=['DO','RE','MI','FA']; let seq=[], inputPos=0, playing=false, accepting=false, target=CONFIG.simonTarget||10; function flashPad(pad, dur=420){ return new Promise(ok=>{ pad.classList.add('play'); setTimeout(()=>{ pad.classList.remove('play'); setTimeout(ok, 120); }, dur); }); } async function playSequence(){ accepting=false; playing=true; res.textContent=`Niveau ${seq.length+1}…`; for(const n of seq){ const pad=pads.find(p=>p.dataset.note===n); await flashPad(pad); } playing=false; accepting=true; inputPos=0; res.textContent=`À toi ! (${seq.length} notes)`; } function nextRound(){ seq.push(notes[Math.floor(Math.random()*notes.length)]); playSequence(); } function reset(){ seq=[]; inputPos=0; accepting=false; playing=false; } pads.forEach(p=>{ p.addEventListener('click', async ()=>{ if(!accepting||playing) return; const n=p.dataset.note; await flashPad(p,200); if(n===seq[inputPos]){ inputPos++; if(inputPos===seq.length){ if(seq.length>=target){ res.innerHTML='<span class="ok">Magnifique !</span>'; next(); } else { setTimeout(nextRound,600); } } } else { res.innerHTML='<span class="warn">Oups ! On rejoue la séquence…</span>'; setTimeout(playSequence,500); } }); }); playBtn.addEventListener('click', ()=>{ reset(); nextRound(); }); }
 
-    // Step6 Maze (HARDER + SWIPE CONTROLS)
+    // Step6 Maze (tuned from v6.3)
     function initMaze(){
       const mazeEl=document.getElementById('maze'); mazeEl.innerHTML='';
       const W=10, H=7;
-      // HARDER: increase wall density
       const wallCoords=[
-        '1,0','2,0','3,0','6,0',
-        '1,1','3,1','5,1','6,1','8,1',
-        '1,2','4,2','5,2','7,2','8,2',
-        '0,3','1,3','3,3','4,3','5,3','6,3','8,3',
-        '2,4','4,4','8,4',
-        '0,5','2,5','3,5','4,5','6,5','7,5','8,5',
+        '2,0','3,0','6,0','7,0',
+        '1,1','3,1','5,1','7,1',
+        '1,2','4,2','5,2','7,2',
+        '0,3','1,3','3,3','4,3','5,3','7,3',
+        '2,4','4,4','6,4','7,4',
+        '0,5','2,5','4,5','6,5','7,5','8,5',
         '1,6','5,6','7,6'
       ];
       const walls=new Set(wallCoords);
       let px=0, py=0; const gx=9, gy=6;
 
       function draw(){ mazeEl.innerHTML=''; for(let y=0;y<H;y++){ for(let x=0;x<W;x++){ const c=document.createElement('div'); c.className='cell'; if(walls.has(x+','+y)) c.classList.add('wall'); if(x===px&&y===py) c.classList.add('player'); if(x===gx&&y===gy) c.classList.add('goal'); mazeEl.appendChild(c); } } }
-
       function tryMove(dx,dy){ const nx=px+dx, ny=py+dy; if(nx<0||nx>=W||ny<0||ny>=H) return; if(walls.has(nx+','+ny)) return; px=nx; py=ny; draw(); if(px===gx&&py===gy){ document.getElementById('res6').innerHTML='<span class="ok">Bravo !</span>'; launchConfetti(); next(); detach(); } }
-
-      // Keyboard support
       function onKey(e){ const k=e.key; if(k==='ArrowRight') tryMove(1,0); else if(k==='ArrowLeft') tryMove(-1,0); else if(k==='ArrowDown') tryMove(0,1); else if(k==='ArrowUp') tryMove(0,-1); }
 
-      // SWIPE support (mobile). Pure touchstart/touchend detection
-      let touchStartX=null, touchStartY=null, touchStartTime=0;
-      function onTouchStart(e){ const t=e.changedTouches[0]; touchStartX=t.clientX; touchStartY=t.clientY; touchStartTime=Date.now(); }
-      function onTouchEnd(e){ const t=e.changedTouches[0]; const dx=t.clientX-touchStartX; const dy=t.clientY-touchStartY; const dt=Date.now()-touchStartTime; const TH=24; // min distance px
-        if(dt>800) return; if(Math.max(Math.abs(dx),Math.abs(dy))<TH) return; if(Math.abs(dx)>Math.abs(dy)) { if(dx>0) tryMove(1,0); else tryMove(-1,0); } else { if(dy>0) tryMove(0,1); else tryMove(0,-1); } }
+      // Swipe controls
+      let tX=null, tY=null, t0=0; const TH=20, MAXDT=700;
+      function onTouchStart(e){ const t=e.changedTouches[0]; tX=t.clientX; tY=t.clientY; t0=Date.now(); }
+      function onTouchEnd(e){ const t=e.changedTouches[0]; const dx=t.clientX-tX; const dy=t.clientY-tY; const dt=Date.now()-t0; if(dt>MAXDT) return; if(Math.max(Math.abs(dx),Math.abs(dy))<TH) return; if(Math.abs(dx)>Math.abs(dy)) { tryMove(dx>0?1:-1,0); } else { tryMove(0, dy>0?1:-1); } }
 
       function attach(){ window.addEventListener('keydown', onKey); mazeEl.addEventListener('touchstart', onTouchStart, {passive:true}); mazeEl.addEventListener('touchend', onTouchEnd, {passive:true}); }
       function detach(){ window.removeEventListener('keydown', onKey); mazeEl.removeEventListener('touchstart', onTouchStart); mazeEl.removeEventListener('touchend', onTouchEnd); }
@@ -232,11 +247,28 @@
       attach(); draw();
     }
 
-    // Init
+    // === Photo slider ===
+    function initSlider(){
+      const el=document.getElementById('slider'); const dots=document.getElementById('dots'); const prev=document.getElementById('prev'); const next=document.getElementById('next');
+      const urls=(CONFIG.photos||[]).slice();
+      if(urls.length===0){ el.innerHTML='<p class="muted" style="padding:12px">Ajoute tes URLs dans <code>CONFIG.photos</code> ✨</p>'; return; }
+      const slides=[]; urls.forEach((u,i)=>{ const s=document.createElement('div'); s.className='slide'+(i===0?' active':''); s.style.backgroundImage=`url(${u})`; el.appendChild(s); slides.push(s); });
+      let idx=0; function go(i){ slides[idx].classList.remove('active'); dots.children[idx]?.classList.remove('active'); idx=(i+slides.length)%slides.length; slides[idx].classList.add('active'); dots.children[idx]?.classList.add('active'); }
+      // dots
+      urls.forEach((_,i)=>{ const d=document.createElement('div'); d.className='dot'+(i===0?' active':''); d.addEventListener('click',()=>go(i)); dots.appendChild(d); });
+      prev.addEventListener('click', ()=>go(idx-1)); next.addEventListener('click', ()=>go(idx+1));
+      // swipe
+      let sx=0, sy=0; el.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
+      el.addEventListener('touchend', e=>{ const dx=e.changedTouches[0].clientX-sx; const dy=e.changedTouches[0].clientY-sy; if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>24){ if(dx<0) go(idx+1); else go(idx-1); } }, {passive:true});
+      // autoplay
+      if(CONFIG.slider?.autoplay){ setInterval(()=>go(idx+1), CONFIG.slider.delay||3000); }
+    }
+
     (function init(){
       document.getElementById('name').textContent=CONFIG.partnerName;
       document.getElementById('startBtn').addEventListener('click', ()=>{ typewriter(document.getElementById('letter')); burstHearts(); document.getElementById('escape').scrollIntoView({behavior:'smooth'}); });
-      // Step initializers
+      // init modules
+      initSlider();
       buildGrid();
       document.getElementById('checkDate').addEventListener('click', onCheckDate);
       document.getElementById('checkDH').addEventListener('click', onCheckDH);
