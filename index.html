@@ -182,16 +182,23 @@
     const CONFIG = {
       partnerName:'Aubin', fromName:'Marguerite', revealAt:'2026-02-14T19:30:00',
       escape:{ expectedDate:'17/11/2024', maxTries:8, correctSeason:'B' }, simonTarget:10,
-      // >>>>>>> AJOUTE/REMPLACE tes photos ICI (URL absolues .jpg/.png/.webp) <<<<<<<
+      // Photos locales (même dossier que index.html) — 10 choisies
       photos:[
-        'https://github.com/Margueritelageek/Binouchou/blob/main/IMG-20250130-WA0000.jpg',
-        'https://github.com/Margueritelageek/Binouchou/blob/main/IMG-20250130-WA0004.jpg',
-        'https://github.com/Margueritelageek/Binouchou/blob/main/IMG-20250130-WA0008.jpg'
+        'IMG-20250130-WA0000.jpg',
+        'IMG-20250914-WA0004.jpg',
+        'IMG-20250914-WA0006.jpg',
+        'IMG_20241211_213627.jpg',
+        'IMG_20241215_223530.jpg',
+        'IMG_20250309_100513.jpg',
+        'IMG_20250309_160654.jpg',
+        'IMG_20250724_160135_2.jpg',
+        'IMG_20251018_175608.jpg',
+        'voila_1744232995005.jpg'
       ],
       slider:{ autoplay:true, delay:3000 } // delay en ms
     };
 
-    function typewriter(el, speed=22){ const full=el.textContent.trim(); el.textContent=''; el.classList.add('typewriter'); let i=0; const t=setInterval(()=>{ el.textContent += full[i++]||''; if(i>=full.length){ el.classList.remove('typewriter'); clearInterval(t); } }, speed); }
+    function typewriter(el, speed=22){ const full=el?.textContent?.trim?.()||''; if(!el||!full){return;} el.textContent=''; el.classList.add('typewriter'); let i=0; const t=setInterval(()=>{ el.textContent += full[i++]||''; if(i>=full.length){ el.classList.remove('typewriter'); clearInterval(t); } }, speed); }
 
     function burstHearts(duration=7000, count=140){ const layer=document.getElementById('burst'); const W=innerWidth, H=innerHeight; const emojis=['❤️','💖','💕','💘','💗','💓','💞','😛','😜']; for(let i=0;i<count;i++){ const el=document.createElement('div'); el.className='burst-item'; el.textContent=emojis[Math.floor(Math.random()*emojis.length)]; const startX=Math.random()*W, startY=-(Math.random()*160+40); const driftX=(Math.random()*2-1)*160; const endY=H+Math.random()*200; const rot=(Math.random()*360-180)+'deg', size=18+Math.random()*26; el.style.left=startX+'px'; el.style.top=startY+'px'; el.style.fontSize=size+'px'; el.style.setProperty('--tx',driftX+'px'); el.style.setProperty('--ty',endY+'px'); el.style.setProperty('--rot',rot); const dur=5000+Math.random()*3500; el.style.animation='floatDown '+dur+'ms ease-in forwards'; el.style.filter='drop-shadow(0 3px 8px rgba(0,0,0,.25))'; layer.appendChild(el); setTimeout(()=>el.remove(), dur+800);} setTimeout(()=>{ Array.from(layer.children).forEach(n=>n.remove()); }, duration+5000); }
 
