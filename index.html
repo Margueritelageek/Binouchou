@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pour Aubin 💘</title>
-  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game" />
+  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v4)" />
   <style>
     :root{ --bg:#101018; --card:#181828; --accent:#ff4d6d; --accent2:#ffd6e0; --accent3:#6df3ff; --text:#f6f6f9; --muted:#b4b4c7; --success:#38d39f; --warning:#ffd166; --radius:18px; }
     *{box-sizing:border-box}
@@ -12,7 +12,7 @@
       radial-gradient(1200px 800px at 10% -10%, #1d1d2f 0%, transparent 60%),
       radial-gradient(1000px 600px at 110% 0%, #1a1a28 0%, transparent 60%), var(--bg); }
     a{ color:var(--accent)}
-    .wrap{max-width:960px;margin:auto;padding:24px}
+    .wrap{max-width:980px;margin:auto;padding:24px}
     header{ text-align:center; padding:56px 16px 24px; }
     h1{font-size:clamp(32px,5vw,48px); margin:0 0 8px}
     h2{font-size:clamp(22px,3.4vw,28px); margin:24px 0 12px}
@@ -26,30 +26,39 @@
     .typewriter{border-right:2px solid var(--accent); white-space:nowrap; overflow:hidden}
     .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,77,109,.18);color:#ff4d6d;font-weight:700;font-size:12px;margin-left:6px}
 
-    /* ===== Hearts + 😛 burst (DOWNWARD) ===== */
+    /* Hearts + 😛 burst (downward) */
     .burst-layer{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:9999; }
     .burst-item{ position:absolute; will-change:transform, opacity; font-size:24px; }
     @keyframes floatDown{
       0%{ transform: translate(var(--x,0), var(--y,0)) scale(0.9) rotate(0deg); opacity:0; }
       10%{ opacity:1; }
-      100%{ transform: translate(var(--tx,0), var(--ty,120vh)) scale(1.1) rotate(var(--rot,20deg)); opacity:0; }
+      100%{ transform: translate(var(--tx,0), var(--ty,120vh)) scale(1.05) rotate(var(--rot,20deg)); opacity:0; }
     }
 
-    /* ===== Escape game ===== */
+    /* Escape game */
     .step{display:none}
     .step.active{display:block}
     .progress{height:8px; background:rgba(255,255,255,.08); border-radius:99px; overflow:hidden; margin:8px 0 6px}
     .bar{height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent3)); transition:.3s}
     .hint{font-size:13px; color:var(--muted)}
+
+    /* Step1 grid */
     .puzzle-area{position:relative; border-radius:12px; border:1px solid rgba(255,255,255,.1); padding:14px; min-height:180px; display:grid; grid-template-columns:repeat(8,1fr); gap:6px; user-select:none}
     .puzzle-cell{display:flex; align-items:center; justify-content:center; height:38px; background:rgba(255,255,255,.04); border-radius:8px; border:1px solid rgba(255,255,255,.06); cursor:pointer}
     .puzzle-cell.reveal{background:rgba(255,77,109,.14); border-color:rgba(255,77,109,.35)}
-    .radio{display:flex; flex-direction:column; gap:8px; margin:10px 0}
-    .radio label{display:flex; align-items:center; gap:8px; cursor:pointer}
-    .ok{color:var(--success); font-weight:700}
-    .warn{color:var(--warning); font-weight:700}
-    .center{display:flex; align-items:center; gap:8px}
-    input[type="text"]{ background:#151525; color:var(--text); border:1px solid rgba(255,255,255,.14); border-radius:10px; padding:10px 12px; outline:none; }
+
+    /* Photo puzzle (3x2) */
+    .photo-wrap{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; border:1px solid rgba(255,255,255,.1); padding:6px; border-radius:12px}
+    .tile{position:relative; width:100%; padding-top:66.66%; background-size:300% 200%; background-repeat:no-repeat; border-radius:10px; border:1px solid rgba(255,255,255,.1); cursor:pointer; overflow:hidden}
+    .tile.sel{outline:3px solid var(--accent)}
+
+    /* Maze */
+    .maze{display:grid; grid-template-columns:repeat(10,28px); grid-auto-rows:28px; gap:4px; padding:8px; border:1px solid rgba(255,255,255,.1); border-radius:12px; width:max-content; background:rgba(255,255,255,.03)}
+    .cell{width:28px; height:28px; border-radius:6px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)}
+    .wall{background:rgba(255,255,255,.12)}
+    .player{background:linear-gradient(180deg,#ffe3ea,#ff9caf); border-color:rgba(255,77,109,.45)}
+    .goal{background:rgba(255,77,109,.18); position:relative}
+    .goal::after{content:'❤'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center}
 
     /* Confetti hearts for final */
     .confetti{pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index:999}
@@ -83,22 +92,24 @@
       </div>
     </section>
 
-    <!-- ===== Mini Escape Game Romantique ===== -->
+    <!-- Mini Escape Game Romantique -->
     <section id="escape" class="card" style="margin-top:16px">
       <div class="progress"><div class="bar" id="bar" style="width:0%"></div></div>
       <h2>Mini‑jeu romantique</h2>
-      <p class="muted">Trois petites épreuves pour débloquer ta surprise finale 💝</p>
+      <p class="muted">Cinq petites épreuves pour débloquer ta surprise finale 💝</p>
 
+      <!-- Step 1 -->
       <div id="step1" class="step active">
-        <h3>Épreuve 1/3 — Trouve le cœur **vraiment** caché 🕵️‍♀️: pas trop vite loustic, tu n'as que 8 essais !</h3>
-        <p class="hint">Clique sur les cases pour le dénicher. Indices « Chaud/Froid » et **8 essais** maximum.</p>
+        <h3>Épreuve 1/5 — Cœur **vraiment** caché 🕵️‍♀️</h3>
+        <p class="hint">Clique sur les cases pour le dénicher. Indices « Chaud/Froid ». <strong>8 essais</strong> max.</p>
         <div class="puzzle-area" id="grid"></div>
         <p id="res1" class="muted"></p>
       </div>
 
+      <!-- Step 2 -->
       <div id="step2" class="step">
-        <h3>Épreuve 2/3 — Notre premier bisou 😘</h3>
-        <p class="hint">Entre la date de notre <em>premier bisou</em> (ex: 14/02/2010). <span class="muted">(format souple)</span></p>
+        <h3>Épreuve 2/5 — Notre premier bisou 😘</h3>
+        <p class="hint">Entre la date (ex: 17/11/2024). <span class="muted">(format souple)</span></p>
         <div class="center">
           <input id="dateInput" type="text" placeholder="jj/mm/aaaa" inputmode="numeric" />
           <button class="btn" id="checkDate">Valider</button>
@@ -106,57 +117,77 @@
         <p id="res2" class="muted"></p>
       </div>
 
+      <!-- Step 3 -->
       <div id="step3" class="step">
-        <h3>Épreuve 3/3 — Desperate Housewives 📺</h3>
-        <p class="hint">Dans **quelle saison** a lieu l’épisode de la **tornade** qui frappe Wisteria Lane ?</p>
+        <h3>Épreuve 3/5 — Desperate Housewives 📺</h3>
+        <p class="hint">Dans **quelle saison** a lieu l’épisode de la <strong>tornade</strong> qui frappe Wisteria Lane ?</p>
         <div class="radio">
           <label><input type="radio" name="qdh" value="A"> Saison 3</label>
           <label><input type="radio" name="qdh" value="B"> Saison 4</label>
-          <label><input type="radio" name="qdh" value="C"> Saison 5</label>
+          <label><input type="radio" name="qdh" value="C"> Saison 6</label>
         </div>
         <button class="btn" id="checkDH">Valider</button>
         <p id="res3" class="muted"></p>
       </div>
 
+      <!-- Step 4: Photo puzzle 3x2 -->
+      <div id="step4" class="step">
+        <h3>Épreuve 4/5 — Puzzle photo 🧩</h3>
+        <p class="hint">Remets les 6 morceaux dans le bon ordre (clique 2 cases pour <em>échanger</em>).</p>
+        <div class="photo-wrap" id="photoWrap"></div>
+        <p class="muted">💡 Tu peux remplacer l'image par la tienne en changeant l'URL dans le code (id <code>photoURL</code>).</p>
+        <p id="res4" class="muted"></p>
+      </div>
+
+      <!-- Step 5: Mini labyrinthe -->
+      <div id="step5" class="step">
+        <h3>Épreuve 5/5 — Mini labyrinthe 💞</h3>
+        <p class="hint">Atteins le cœur avec les <strong>flèches du clavier</strong>.</p>
+        <div class="maze" id="maze"></div>
+        <p id="res5" class="muted"></p>
+      </div>
+
+      <!-- Final -->
       <div id="stepFinal" class="step">
         <h3>Bravo Binouchou ! 🎉</h3>
         <p class="ok">Tu as débloqué la surprise :</p>
-        <p id="reveal" style="font-weight:700; font-size:18px">🎁 Ce soir, on a <em>réservé</em> au resto ! ✨</p>
+        <p id="reveal" style="font-weight:700; font-size:18px">🎁 Ce soir, on a <em>réservé</em> au resto ! Tenue chic, sourire obligatoire ✨</p>
         <button class="btn" onclick="window.scrollTo({top:0, behavior:'smooth'})">Remonter en haut</button>
       </div>
     </section>
   </div>
 
   <script>
-    // ===== Config =====
+    // Config
     const CONFIG = {
       partnerName: 'Aubin', fromName: 'Marguerite', revealAt: '2026-02-14T19:30:00',
-      escape: { expectedDate: '17/11/2024', maxTries: 8, correctSeason: 'B' } // B = Saison 4
+      escape: { expectedDate: '17/11/2024', maxTries: 8, correctSeason: 'B' },
+      photoURL: 'https://images.unsplash.com/photo-1520975682031-ae3f0391f7f4?q=80&w=1200'
     };
 
-    // ===== Typewriter =====
+    // Typewriter
     function typewriter(el, speed=22){ const full=el.textContent.trim(); el.textContent=''; el.classList.add('typewriter'); let i=0; const t=setInterval(()=>{ el.textContent += full[i++]||''; if(i>=full.length){ el.classList.remove('typewriter'); clearInterval(t); } }, speed); }
 
-    // ===== Downward hearts + 😛 =====
-    function burstHearts(duration=8000, count=140){ // descente plus lente
+    // Downward hearts + 😛
+    function burstHearts(duration=7000, count=140){
       const layer = document.getElementById('burst');
       const W = window.innerWidth, H = window.innerHeight;
       const emojis = ['❤️','💖','💕','💘','💗','💓','💞','😛','😜'];
       for(let i=0;i<count;i++){
         const el = document.createElement('div'); el.className = 'burst-item'; el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-        const startX = Math.random()*W, startY = - (Math.random()*120 + 40); // démarre au-dessus
-        const driftX = (Math.random()*2-1) * 140; const endY = H + Math.random()*200; // descend
+        const startX = Math.random()*W, startY = -(Math.random()*160 + 40);
+        const driftX = (Math.random()*2-1) * 160; const endY = H + Math.random()*200;
         const rot = (Math.random()*360-180)+'deg', size = 18 + Math.random()*26;
         el.style.left = startX+'px'; el.style.top = startY+'px'; el.style.fontSize = size+'px';
         el.style.setProperty('--tx', driftX+'px'); el.style.setProperty('--ty', endY+'px'); el.style.setProperty('--rot', rot);
-        const dur = 4000 + Math.random()*3500; el.style.animation = 'floatDown '+dur+'ms ease-in forwards';
+        const dur = 5000 + Math.random()*3500; el.style.animation = 'floatDown '+dur+'ms ease-in forwards';
         el.style.filter = 'drop-shadow(0 3px 8px rgba(0,0,0,.25))'; layer.appendChild(el);
-        setTimeout(()=> el.remove(), dur + 500);
+        setTimeout(()=> el.remove(), dur + 800);
       }
-      setTimeout(()=>{ Array.from(layer.children).forEach(n=>n.remove()); }, duration+4000);
+      setTimeout(()=>{ Array.from(layer.children).forEach(n=>n.remove()); }, duration+5000);
     }
 
-    // ===== Confetti hearts (final) =====
+    // Final confetti
     function launchConfetti(duration=2200){
       const c = document.getElementById('confetti'); const end = Date.now() + duration;
       const spawn = () => {
@@ -172,60 +203,78 @@
       }; spawn();
     }
 
-    // ===== Escape game logic =====
-    const steps = ['step1','step2','step3','stepFinal']; let current = 0;
-    function setStep(i){ steps.forEach((id,idx)=>{ document.getElementById(id).classList.toggle('active', idx===i); }); current=i; document.getElementById('bar').style.width = (i*33)+'%'; }
-    function next(){ setStep(Math.min(current+1, 3)); }
+    // Helpers
+    function normalizeDate(s){ return (s||'').toString().toLowerCase().replace(/[^0-9]/g,''); }
 
-    // Step 1: grille (coeur caché + chaud/froid + essais)
+    // Steps logic
+    const stepIds = ['step1','step2','step3','step4','step5','stepFinal'];
+    let current = 0;
+    function setStep(i){ stepIds.forEach((id,idx)=>{ document.getElementById(id).classList.toggle('active', idx===i); }); current=i; const total=stepIds.length-1; document.getElementById('bar').style.width = Math.min(100, i*100/total)+'%'; }
+    function next(){ setStep(Math.min(current+1, stepIds.length-1)); }
+
+    // Step1: hidden heart
     function buildGrid(){
-      const grid = document.getElementById('grid'); const cols=8, total = 48; const target = Math.floor(Math.random()*total);
+      const grid = document.getElementById('grid'); grid.innerHTML=''; const cols=8, total = 48; const target = Math.floor(Math.random()*total);
       const ty = Math.floor(target/cols), tx = target%cols; let tries=0; const maxT = CONFIG.escape.maxTries;
       for(let i=0;i<total;i++){
         const cell = document.createElement('div'); cell.className = 'puzzle-cell'; cell.textContent = '·';
         cell.dataset.idx = i; grid.appendChild(cell);
         cell.addEventListener('click',()=>{
-          if(current!==0) return; // only works in step1
+          if(current!==0) return;
           tries++;
           const idx = +cell.dataset.idx; const y = Math.floor(idx/cols), x = idx%cols;
           const dist = Math.abs(x-tx)+Math.abs(y-ty);
-          if(idx===target){
-            cell.classList.add('reveal'); cell.textContent = '❤';
-            document.getElementById('res1').innerHTML = `<span class="ok">Trouvé en ${tries} essai(s) !</span>`;
-            next();
-          } else {
-            if(tries>=maxT){
-              document.getElementById('res1').innerHTML = `<span class="warn">Oups, ${maxT} essais écoulés. Le cœur était ailleurs 💔</span>`;
-              // Réinitialise une nouvelle grille plus facile
-              grid.innerHTML=''; buildGrid();
-            } else {
-              const hint = dist<=1? '🔥 Brûlant' : dist<=2? '♨️ Chaud' : dist<=4? '🌤️ Tiède' : '❄️ Froid';
-              document.getElementById('res1').innerHTML = `${hint} — essai ${tries}/${maxT}`;
-              cell.style.opacity = 0.6;
-            }
+          if(idx===target){ cell.classList.add('reveal'); cell.textContent = '❤'; document.getElementById('res1').innerHTML = `<span class="ok">Trouvé en ${tries} essai(s) !</span>`; next(); }
+          else {
+            if(tries>=maxT){ document.getElementById('res1').innerHTML = `<span class="warn">Oups, ${maxT} essais écoulés. Nouvelle grille !</span>`; buildGrid(); }
+            else { const hint = dist<=1? '🔥 Brûlant' : dist<=2? '♨️ Chaud' : dist<=4? '🌤️ Tiède' : '❄️ Froid'; document.getElementById('res1').innerHTML = `${hint} — essai ${tries}/${maxT}`; cell.style.opacity = 0.6; }
           }
         });
       }
     }
 
-    // Step 2: date
-    function normalizeDate(s){ return (s||'').toString().toLowerCase().replace(/[^0-9]/g,''); }
-    function checkDate(){ const got = normalizeDate(document.getElementById('dateInput').value); const want = normalizeDate(CONFIG.escape.expectedDate); const res = document.getElementById('res2'); if(!got){ res.textContent='Indique une date 😊'; return; } if(got===want){ res.innerHTML='<span class="ok">Parfait !</span>'; next(); } else { res.innerHTML='<span class="warn">Presque… réessaie</span>'; } }
+    // Step2: date
+    function onCheckDate(){ const got = normalizeDate(document.getElementById('dateInput').value); const want = normalizeDate(CONFIG.escape.expectedDate); const res = document.getElementById('res2'); if(!got){ res.textContent='Indique une date 😊'; return; } if(got===want){ res.innerHTML='<span class="ok">Parfait !</span>'; next(); } else { res.innerHTML='<span class="warn">Presque… réessaie</span>'; } }
 
-    // Step 3: Desperate Housewives (saison)
-    function checkDH(){ const picked = document.querySelector('input[name="qdh"]:checked'); const res = document.getElementById('res3'); if(!picked){ res.textContent='Choisis une saison 😇'; return; } if(picked.value===CONFIG.escape.correctSeason){ res.innerHTML='<span class="ok">Exact : saison 4 !</span>'; launchConfetti(); next(); } else { res.innerHTML='<span class="warn">Pas tout à fait… essaie encore</span>'; } }
+    // Step3: DH season
+    function onCheckDH(){ const picked = document.querySelector('input[name="qdh"]:checked'); const res = document.getElementById('res3'); if(!picked){ res.textContent='Choisis une saison 😇'; return; } if(picked.value===CONFIG.escape.correctSeason){ res.innerHTML='<span class="ok">Exact : saison 4 !</span>'; launchConfetti(); next(); } else { res.innerHTML='<span class="warn">Pas tout à fait…</span>'; } }
 
-    // ===== Init =====
+    // Step4: Photo puzzle 3x2 (swap)
+    function initPhotoPuzzle(){
+      const wrap = document.getElementById('photoWrap'); wrap.innerHTML='';
+      const order = [0,1,2,3,4,5];
+      const cur = order.slice().sort(()=>Math.random()-0.5);
+      if(cur.join('')===order.join('')) cur.reverse();
+      const sel = {idx:null};
+      function tileBG(idx){ const col = idx%3, row = Math.floor(idx/3); return `${col*50}% ${row*100}%`; }
+      function render(){ wrap.innerHTML=''; cur.forEach((targetIdx,pos)=>{ const d=document.createElement('div'); d.className='tile'; d.style.backgroundImage=`url(${CONFIG.photoURL})`; d.style.backgroundPosition=tileBG(targetIdx); d.dataset.pos=pos; d.addEventListener('click',()=>{
+          const p = +d.dataset.pos; if(sel.idx===null){ sel.idx=p; d.classList.add('sel'); }
+          else if(sel.idx===p){ d.classList.remove('sel'); sel.idx=null; }
+          else { const q = sel.idx; const tmp = cur[p]; cur[p]=cur[q]; cur[q]=tmp; sel.idx=null; render(); checkSolved(); }
+        }); wrap.appendChild(d); }); }
+      function checkSolved(){ if(cur.every((t,i)=>t===order[i])){ document.getElementById('res4').innerHTML='<span class="ok">Parfait !</span>'; next(); } }
+      render();
+    }
+
+    // Step5: Mini maze
+    function initMaze(){
+      const maze = document.getElementById('maze'); maze.innerHTML='';
+      const W=10, H=7; const walls = new Set([ '2,0','2,1','2,2','2,3','4,3','5,3','6,3','7,3','7,4','7,5','3,5','4,5','5,5' ]);
+      let px=0, py=0; const gx=9, gy=6;
+      function key(e){ const k=e.key; let nx=px, ny=py; if(k==='ArrowRight') nx++; else if(k==='ArrowLeft') nx--; else if(k==='ArrowDown') ny++; else if(k==='ArrowUp') ny--; else return; e.preventDefault(); if(nx<0||nx>=W||ny<0||ny>=H) return; if(walls.has(nx+','+ny)) return; px=nx; py=ny; draw(); if(px===gx&&py===gy){ document.getElementById('res5').innerHTML='<span class="ok">Bravo !</span>'; launchConfetti(); next(); window.removeEventListener('keydown', key); } }
+      function draw(){ maze.innerHTML=''; for(let y=0;y<H;y++){ for(let x=0;x<W;x++){ const c=document.createElement('div'); c.className='cell'; if(walls.has(x+','+y)) c.classList.add('wall'); if(x===px&&y===py) c.classList.add('player'); if(x===gx&&y===gy) c.classList.add('goal'); maze.appendChild(c); } } }
+      window.addEventListener('keydown', key); draw();
+    }
+
+    // Init
     (function init(){
       document.getElementById('name').textContent = CONFIG.partnerName;
-      document.getElementById('startBtn').addEventListener('click', ()=>{
-        typewriter(document.getElementById('letter'));
-        burstHearts(); // animation descendante lente
-        document.getElementById('escape').scrollIntoView({behavior:'smooth'});
-      });
+      document.getElementById('startBtn').addEventListener('click', ()=>{ typewriter(document.getElementById('letter')); burstHearts(); document.getElementById('escape').scrollIntoView({behavior:'smooth'}); });
       buildGrid();
-      document.getElementById('checkDate').addEventListener('click', checkDate);
-      document.getElementById('checkDH').addEventListener('click', checkDH);
+      document.getElementById('checkDate').addEventListener('click', onCheckDate);
+      document.getElementById('checkDH').addEventListener('click', onCheckDH);
+      initPhotoPuzzle();
+      initMaze();
     })();
   </script>
 </body>
