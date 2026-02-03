@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pour Aubin 💘</title>
+  <meta name="description" content="Une petite surprise de Saint‑Valentin ✨" />
+  <style>
+    :root{
+      /* palette romantique + fun */
+      --bg:#101018; --card:#181828; --accent:#ff4d6d; --accent2:#ffd6e0; --accent3:#6df3ff;
+      --text:#f6f6f9; --muted:#b4b4c7; --success:#38d39f; --warning:#ffd166;
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text); background:
+        radial-gradient(1200px 800px at 10% -10%, #1d1d2f 0%, transparent 60%),
+        radial-gradient(1000px 600px at 110% 0%, #1a1a28 0%, transparent 60%),
+        var(--bg);
+    }
+    a{color:var(--accent)}
+    .wrap{max-width:960px;margin:auto;padding:24px}
+    header{ text-align:center; padding:56px 16px 24px; }
+    h1{font-size:clamp(32px,5vw,48px); margin:0 0 8px}
+    h2{font-size:clamp(22px,3.4vw,28px); margin:24px 0 12px}
+    p.lead{color:var(--muted); margin:0 auto 12px; max-width:54ch}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03));
+      border:1px solid rgba(255,255,255,0.09);
+      border-radius:var(--radius); padding:20px; box-shadow:0 10px 40px rgba(0,0,0,0.25);
+      backdrop-filter: blur(6px);
+    }
+    .grid{display:grid; gap:16px}
+    @media(min-width:840px){ .grid-2{grid-template-columns:1fr 1fr} }
+    .btn{
+      display:inline-flex; align-items:center; gap:.5rem; cursor:pointer; border:0;
+      color:#121217; background:linear-gradient(90deg,var(--accent),var(--accent3));
+      padding:12px 16px; border-radius:14px; font-weight:700; letter-spacing:.2px;
+      box-shadow:0 10px 24px rgba(255,77,109,.35); transition:.2s;
+    }
+    .btn:hover{transform:translateY(-1px) scale(1.01); box-shadow:0 12px 28px rgba(109,243,255,.25)}
+    .muted{color:var(--muted)}
+    /* Galerie */
+    .gallery{display:grid; gap:8px; grid-template-columns:repeat(3,1fr)}
+    .gallery figure{margin:0}
+    .gallery img{width:100%; height:160px; object-fit:cover; border-radius:12px; border:1px solid rgba(255,255,255,0.1)}
+    .gallery figcaption{font-size:12px; color:var(--muted); margin-top:4px}
+    @media(max-width:620px){ .gallery{grid-template-columns:1fr 1fr} .gallery img{height:140px} }
+    /* Timeline */
+    .timeline{position:relative; padding-left:18px}
+    .timeline::before{content:""; position:absolute; left:8px; top:6px; bottom:6px; width:2px; background:rgba(255,255,255,.15)}
+    .tl-item{position:relative; margin:10px 0 14px}
+    .tl-item::before{content:""; position:absolute; left:-1px; top:5px; width:10px; height:10px; border-radius:50%; background:var(--accent)}
+    /* Quiz */
+    .quiz q{display:block; font-weight:700; margin-bottom:8px}
+    .quiz label{display:flex; gap:10px; align-items:center; margin:6px 0; cursor:pointer}
+    .result{margin-top:10px; font-weight:700}
+    .success{color:var(--success)} .warn{color:var(--warning)}
+    /* Typewriter */
+    .typewriter{border-right:2px solid var(--accent); white-space:nowrap; overflow:hidden}
+    /* Confettis */
+    .confetti{pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index:999}
+    .heart{ position:absolute; width:14px; height:14px; transform:rotate(45deg); background:var(--accent); animation:fall 4s linear forwards; }
+    .heart::before,.heart::after{ content:""; position:absolute; width:14px; height:14px; border-radius:50%; background:var(--accent); }
+    .heart::before{left:-7px} .heart::after{top:-7px}
+    @keyframes fall{ 0%{transform:translateY(-10vh) rotate(45deg) scale(0.8); opacity:0} 10%{opacity:1} 100%{transform:translateY(110vh) rotate(45deg) scale(1.1); opacity:0} }
+    footer{margin:32px 0 12px; text-align:center; color:var(--muted); font-size:14px}
+    .tag{display:inline-block; padding:2px 8px; border-radius:999px; background:rgba(255,77,109,.18); color:var(--accent); font-weight:700; font-size:12px; margin-left:6px}
+  </style>
+</head>
+<body>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <h1>Pour toi, <span id="name">Aubin</span> <span class="tag">aka Binouchou</span> 💘</h1>
+      <p class="lead">Une petite surprise romantique & fun rien que pour toi…</p>
+      <button class="btn" id="startBtn">Lancer la surprise</button>
+    </header>
+
+    <section class="grid grid-2">
+      <!-- Quiz -->
+      <div class="card">
+        <h2>Quizz “Nous deux”</h2>
+        <div class="quiz" id="quiz">
+          <div>
+            <q>Où s’est passé notre premier rendez‑vous ?</q>
+            <label><input type="radio" name="q1" value="parc">Au parc</label>
+            <label><input type="radio" name="q1" value="ciné">Au ciné</label>
+            <label><input type="radio" name="q1" value="café">Au café ☕</label>
+          </div>
+          <div>
+            <q>Notre plat “signature” ?</q>
+            <label><input type="radio" name="q2" value="sushi">Sushi</label>
+            <label><input type="radio" name="q2" value="pâtes">Pâtes 🍝</label>
+            <label><input type="radio" name="q2" value="tacos">Tacos</label>
+          </div>
+          <div>
+            <q>La date qui compte pour nous ?</q>
+            <label><input type="radio" name="q3" value="0101">1er janv.</label>
+            <label><input type="radio" name="q3" value="0214">14 févr. ❤️</label>
+            <label><input type="radio" name="q3" value="0707">7 juil.</label>
+          </div>
+          <button class="btn" id="checkBtn">Vérifier</button>
+          <div id="quizResult" class="result muted"></div>
+        </div>
+      </div>
+
+      <!-- Galerie -->
+      <div class="card">
+        <h2>Nos souvenirs</h2>
+        <div class="gallery">
+          <figure>
+            <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800" alt="Souvenir 1"/>
+            <figcaption>Un moment rien que nous deux</figcaption>
+          </figure>
+          <figure>
+            <img src="https://images.unsplash.com/photo-1510771463146-e89e6e86560e?q=80&w=800" alt="Souvenir 2"/>
+            <figcaption>Premier fou rire</figcaption>
+          </figure>
+          <figure>
+            <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800" alt="Souvenir 3"/>
+            <figcaption>Balade au soleil</figcaption>
+          </figure>
+          <figure>
+            <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=800" alt="Souvenir 4"/>
+            <figcaption>Goûter improvisé</figcaption>
+          </figure>
+          <figure>
+            <img src="https://images.unsplash.com/photo-1520975682031-ae3f0391f7f4?q=80&w=800" alt="Souvenir 5"/>
+            <figcaption>Notre endroit préféré</figcaption>
+          </figure>
+          <figure>
+            <img src="https://images.unsplash.com/photo-1483794344563-d27a8d18014e?q=80&w=800" alt="Souvenir 6"/>
+            <figcaption>Coucher de soleil</figcaption>
+          </figure>
+        </div>
+        <p class="muted">Tu peux remplacer ces images par les tiennes (fichiers locaux ou liens en ligne).</p>
+      </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="card" style="margin-top:16px">
+      <h2>Notre petite histoire</h2>
+      <div class="timeline">
+        <div class="tl-item"><strong>12/05/2023</strong> — Premier café (et premier fou rire).</div>
+        <div class="tl-item"><strong>28/07/2023</strong> — Le concert sous la pluie, mémorable.</div>
+        <div class="tl-item"><strong>22/12/2023</strong> — Notre voyage surprise.</div>
+      </div>
+    </section>
+
+    <!-- Lettre & Playlist -->
+    <section class="grid grid-2" style="margin-top:16px">
+      <div class="card">
+        <h2>Lettre pour toi</h2>
+        <p id="letter" class="typewriter muted" style="font-size:18px; line-height:1.6">
+          Mon Binouchou, chaque jour à tes côtés me rappelle la chance que j’ai.
+          Merci pour ta douceur, ton humour, et tout ce que nous construisons. Joyeuse Saint‑Valentin ❤️
+        </p>
+      </div>
+      <div class="card">
+        <h2>Notre bande‑son</h2>
+        <p class="muted">Remplace l’embed par votre playlist si tu veux.</p>
+        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX6xZZEgC9Ubl?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+      </div>
+    </section>
+
+    <!-- Compte à rebours & Révélation -->
+    <section class="card" style="margin-top:16px">
+      <h2>Rendez‑vous dans <span id="countdown">—</span></h2>
+      <p class="muted">Date/heure ajustables dans le code si besoin.</p>
+      <p id="reveal" style="display:none; font-weight:700; font-size:18px">
+        🎁 Surprise : ce soir, on a <em>réservé</em> au resto !
+      </p>
+    </section>
+
+    <footer>Fait avec ❤️ par <span id="from">Marguerite</span></footer>
+  </div>
+
+  <script>
+    // ===== Paramètres à personnaliser =====
+    const config = {
+      partnerName: "Aubin",
+      fromName: "Marguerite",
+      // Date du rendez-vous (AAAA-MM-JJTHH:mm:ss)
+      revealAt: "2026-02-14T19:30:00",
+      // Réponses attendues du quiz (doivent correspondre aux value des inputs)
+      answers: { q1:"café", q2:"pâtes", q3:"0214" }
+    };
+
+    // ===== Confettis coeurs =====
+    function launchConfetti(duration=2000){
+      const c = document.getElementById('confetti');
+      const end = Date.now() + duration;
+      const spawn = () => {
+        for(let i=0;i<8;i++){
+          const h = document.createElement('div');
+          h.className='heart';
+          h.style.left = Math.random()*100 + 'vw';
+          h.style.animationDuration = (3+Math.random()*2)+'s';
+          h.style.background = Math.random()>0.5 ? 'var(--accent)' : 'var(--accent2)';
+          h.style.filter = 'drop-shadow(0 2px 6px rgba(0,0,0,.2))';
+          c.appendChild(h);
+          setTimeout(()=>h.remove(),5000);
+        }
+        if(Date.now()<end) requestAnimationFrame(spawn);
+      };
+      spawn();
+    }
+
+    // ===== Typewriter =====
+    function typewriter(el, speed=22){
+      const full = el.textContent.trim();
+      el.textContent = "";
+      el.classList.add('typewriter');
+      let i=0;
+      const t = setInterval(() => {
+        el.textContent += full[i++] || '';
+        if(i>=full.length){ el.classList.remove('typewriter'); clearInterval(t); }
+      }, speed);
+    }
+
+    // ===== Quiz =====
+    function checkQuiz(){
+      const res = document.getElementById('quizResult');
+      const choices = ['q1','q2','q3'].map(q=>{
+        const el = document.querySelector(`input[name="${q}"]:checked`);
+        return el ? el.value : null;
+      });
+      if(choices.some(v=>v===null)){ res.textContent="Réponds à tout 😇"; return; }
+      const ok = choices[0]===config.answers.q1 && choices[1]===config.answers.q2 && choices[2]===config.answers.q3;
+      if(ok){ res.innerHTML = 'Parfait ! 💚'; res.className = 'result success'; document.getElementById('reveal').style.display='block'; launchConfetti(2500); }
+      else { res.innerHTML = 'Presque… réessaie 😉'; res.className = 'result warn'; }
+    }
+
+    // ===== Compte à rebours =====
+    function countdown(){
+      const el = document.getElementById('countdown');
+      function tick(){
+        const now = new Date();
+        const target = new Date(config.revealAt);
+        const diff = target - now;
+        if(diff<=0){ el.textContent = "maintenant !"; return; }
+        const d = Math.floor(diff/86400000);
+        const h = Math.floor(diff%86400000/3600000);
+        const m = Math.floor(diff%3600000/60000);
+        const s = Math.floor(diff%60000/1000);
+        el.textContent = `${d}j ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+        requestAnimationFrame(tick);
+      }
+      tick();
+    }
+
+    // ===== Init =====
+    (function init(){
+      document.getElementById('name').textContent = config.partnerName;
+      document.getElementById('from').textContent = config.fromName;
+      document.getElementById('checkBtn').addEventListener('click', checkQuiz);
+      document.getElementById('startBtn').addEventListener('click', ()=>{
+        launchConfetti(1800);
+        typewriter(document.getElementById('letter'));
+        window.scrollTo({top:document.body.scrollHeight/6, behavior:'smooth'});
+      });
+      countdown();
+    })()
+  </script>
+</body>
+</html>
