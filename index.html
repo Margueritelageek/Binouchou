@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pour Aubin 💘</title>
-  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v6.4)" />
+  <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v6.4.1)" />
   <style>
     :root{ --bg:#101018; --card:#181828; --accent:#ff4d6d; --accent2:#ffd6e0; --accent3:#6df3ff; --text:#f6f6f9; --muted:#b4b4c7; --success:#38d39f; --warning:#ffd166; --radius:18px; }
     *{box-sizing:border-box}
@@ -51,7 +51,7 @@
     /* Maze */
     .maze{display:grid; grid-template-columns:repeat(10,28px); grid-auto-rows:28px; gap:4px; padding:8px; border:1px solid rgba(255,255,255,.1); border-radius:12px; width:max-content; background:rgba(255,255,255,.03); touch-action:none}
     .cell{width:28px; height:28px; border-radius:6px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)}
-    .wall{background:rgba(255,255,255,.18)}
+    .wall{background:rgba(255,255,255,.14)}
     .player{background:linear-gradient(180deg,#ffe3ea,#ff9caf); border-color:rgba(255,77,109,.45)}
     .goal{background:rgba(255,77,109,.18); position:relative}
     .goal::after{content:'❤'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center}
@@ -68,7 +68,7 @@
     .controls{display:flex; gap:10px; align-items:center; margin-top:6px}
     .small{font-size:12px; color:var(--muted)}
 
-    /* Photo slider (replaces letter) */
+    /* Photo slider */
     .slider{position:relative; aspect-ratio: 4/3; width:100%; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,.1); background:#0f0f17}
     .slide{position:absolute; inset:0; background-position:center; background-size:cover; opacity:0; transition:.6s opacity ease}
     .slide.active{opacity:1}
@@ -148,7 +148,7 @@
 
       <div id="step5" class="step">
         <h3>Épreuve 5/6 — La Mélodie du Bonheur 🎶 (Simon musical)</h3>
-        <p class="hint">Répète la suite affichée par les boutons. Le niveau augmente à chaque réussite. Objectif : <strong>10</strong> !</p>
+        <p class="hint">Répète la suite affichée par les boutons. Le niveau augmente à chaque réussite. Objectif : <strong>7</strong> !</p>
         <div class="pad-wrap">
           <div class="pad" data-note="DO">DO</div>
           <div class="pad" data-note="RE">RE</div>
@@ -181,21 +181,12 @@
   <script>
     const CONFIG = {
       partnerName:'Aubin', fromName:'Marguerite', revealAt:'2026-02-14T19:30:00',
-      escape:{ expectedDate:'17/11/2024', maxTries:8, correctSeason:'B' }, simonTarget:7,
-      // Photos locales (même dossier que index.html) — 10 choisies
+      escape:{ expectedDate:'17/11/2024', maxTries:8, correctSeason:'B' },
+      simonTarget:7,
       photos:[
-        'IMG-20250130-WA0000.jpg',
-        'IMG-20250914-WA0004.jpg',
-        'IMG-20250914-WA0006.jpg',
-        'IMG_20241211_213627.jpg',
-        'IMG_20241215_223530.jpg',
-        'IMG_20250309_100513.jpg',
-        'IMG_20250309_160654.jpg',
-        'IMG_20250724_160135_2.jpg',
-        'IMG_20251018_175608.jpg',
-        'voila_1744232995005.jpg'
+        'IMG-20250130-WA0000.jpg','IMG-20250914-WA0004.jpg','IMG-20250914-WA0006.jpg','IMG_20241211_213627.jpg','IMG_20241215_223530.jpg','IMG_20250309_100513.jpg','IMG_20250309_160654.jpg','IMG_20250724_160135_2.jpg','IMG_20251018_175608.jpg','voila_1744232995005.jpg'
       ],
-      slider:{ autoplay:true, delay:3000 } // delay en ms
+      slider:{ autoplay:true, delay:3000 }
     };
 
     function typewriter(el, speed=22){ const full=el?.textContent?.trim?.()||''; if(!el||!full){return;} el.textContent=''; el.classList.add('typewriter'); let i=0; const t=setInterval(()=>{ el.textContent += full[i++]||''; if(i>=full.length){ el.classList.remove('typewriter'); clearInterval(t); } }, speed); }
@@ -221,19 +212,20 @@
     function initStarWars(){ const space=document.getElementById('space'); space.innerHTML=''; const cols=12, rows=8, total=cols*rows, target=Math.floor(Math.random()*total); let tries=0, maxT=10; const ty=Math.floor(target/cols), tx=target%cols; for(let i=0;i<total;i++){ const d=document.createElement('div'); d.className='star'; d.dataset.idx=i; space.appendChild(d); d.addEventListener('click',()=>{ if(current!==3) return; tries++; const idx=+d.dataset.idx; const y=Math.floor(idx/cols), x=idx%cols; const man=Math.abs(x-tx)+Math.abs(y-ty); if(idx===target){ d.classList.add('hit'); document.getElementById('res4').innerHTML='<span class="ok">Tu as trouvé le sabre !</span>'; next(); } else { if(tries>=maxT){ document.getElementById('res4').innerHTML='<span class="warn">La Force s’épuise… nouvelle galaxie !</span>'; initStarWars(); } else { const hint=man<=1?'🔥 Très chaud':man<=2?'✨ Chaud':man<=4?'🌤️ Tiède':man<=6?'💧 Froid':'🧊 Hyperfroid'; document.getElementById('res4').innerHTML=`${hint} — essai ${tries}/${maxT}`; d.style.opacity=0.5; } } }); } }
 
     // Step5 Simon musical
-    function initSimon(){ const pads=Array.from(document.querySelectorAll('#step5 .pad')); const res=document.getElementById('res5'); const playBtn=document.getElementById('playSeq'); const notes=['DO','RE','MI','FA']; let seq=[], inputPos=0, playing=false, accepting=false, target=CONFIG.simonTarget||10; function flashPad(pad, dur=420){ return new Promise(ok=>{ pad.classList.add('play'); setTimeout(()=>{ pad.classList.remove('play'); setTimeout(ok, 120); }, dur); }); } async function playSequence(){ accepting=false; playing=true; res.textContent=`Niveau ${seq.length+1}…`; for(const n of seq){ const pad=pads.find(p=>p.dataset.note===n); await flashPad(pad); } playing=false; accepting=true; inputPos=0; res.textContent=`À toi ! (${seq.length} notes)`; } function nextRound(){ seq.push(notes[Math.floor(Math.random()*notes.length)]); playSequence(); } function reset(){ seq=[]; inputPos=0; accepting=false; playing=false; } pads.forEach(p=>{ p.addEventListener('click', async ()=>{ if(!accepting||playing) return; const n=p.dataset.note; await flashPad(p,200); if(n===seq[inputPos]){ inputPos++; if(inputPos===seq.length){ if(seq.length>=target){ res.innerHTML='<span class="ok">Magnifique !</span>'; next(); } else { setTimeout(nextRound,600); } } } else { res.innerHTML='<span class="warn">Oups ! On rejoue la séquence…</span>'; setTimeout(playSequence,500); } }); }); playBtn.addEventListener('click', ()=>{ reset(); nextRound(); }); }
+    function initSimon(){ const pads=Array.from(document.querySelectorAll('#step5 .pad')); const res=document.getElementById('res5'); const playBtn=document.getElementById('playSeq'); const notes=['DO','RE','MI','FA']; let seq=[], inputPos=0, playing=false, accepting=false, target=CONFIG.simonTarget||7; function flashPad(pad, dur=420){ return new Promise(ok=>{ pad.classList.add('play'); setTimeout(()=>{ pad.classList.remove('play'); setTimeout(ok, 120); }, dur); }); } async function playSequence(){ accepting=false; playing=true; res.textContent=`Niveau ${seq.length+1}…`; for(const n of seq){ const pad=pads.find(p=>p.dataset.note===n); await flashPad(pad); } playing=false; accepting=true; inputPos=0; res.textContent=`À toi ! (${seq.length} notes)`; } function nextRound(){ seq.push(notes[Math.floor(Math.random()*notes.length)]); playSequence(); } function reset(){ seq=[]; inputPos=0; accepting=false; playing=false; } pads.forEach(p=>{ p.addEventListener('click', async ()=>{ if(!accepting||playing) return; const n=p.dataset.note; await flashPad(p,200); if(n===seq[inputPos]){ inputPos++; if(inputPos===seq.length){ if(seq.length>=target){ res.innerHTML='<span class="ok">Magnifique !</span>'; next(); } else { setTimeout(nextRound,600); } } } else { res.innerHTML='<span class="warn">Oups ! On rejoue la séquence…</span>'; setTimeout(playSequence,500); } }); }); playBtn.addEventListener('click', ()=>{ reset(); nextRound(); }); }
 
-    // Step6 Maze (tuned from v6.3)
+    // Step6 Maze (simplified, solvable)
     function initMaze(){
       const mazeEl=document.getElementById('maze'); mazeEl.innerHTML='';
       const W=10, H=7;
+      // Medium difficulty: fewer walls, clear path
       const wallCoords=[
-        '2,0','3,0','6,0','7,0',
-        '1,1','3,1','5,1','7,1',
-        '1,2','4,2','5,2','7,2',
-        '0,3','1,3','3,3','4,3','5,3','7,3',
-        '2,4','4,4','6,4','7,4',
-        '0,5','2,5','4,5','6,5','7,5','8,5',
+        '2,0','6,0',
+        '1,1','5,1','7,1',
+        '1,2','4,2','7,2',
+        '1,3','3,3','5,3',
+        '2,4','6,4',
+        '2,5','6,5','8,5'
       ];
       const walls=new Set(wallCoords);
       let px=0, py=0; const gx=9, gy=6;
@@ -273,7 +265,6 @@
     (function init(){
       document.getElementById('name').textContent=CONFIG.partnerName;
       document.getElementById('startBtn').addEventListener('click', ()=>{ typewriter(document.getElementById('letter')); burstHearts(); document.getElementById('escape').scrollIntoView({behavior:'smooth'}); });
-      // init modules
       initSlider();
       buildGrid();
       document.getElementById('checkDate').addEventListener('click', onCheckDate);
