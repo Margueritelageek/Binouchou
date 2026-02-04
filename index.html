@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pour Aubin 💘</title>
+  <title>Pour toi Binouchou 💘</title>
   <meta name="description" content="Surprise de Saint‑Valentin ✨ avec animation et mini escape game (v6.4.1)" />
   <style>
     :root{ --bg:#101018; --card:#181828; --accent:#ff4d6d; --accent2:#ffd6e0; --accent3:#6df3ff; --text:#f6f6f9; --muted:#b4b4c7; --success:#38d39f; --warning:#ffd166; --radius:18px; }
@@ -85,14 +85,14 @@
 
   <div class="wrap">
     <header>
-      <h1>Pour toi <span id="name">Aubin</span> <span class="tag">aka Binouchou</span> 💘</h1>
-      <p class="lead">Bienvenue dans l'Escape Game du Love 💘</p>
+      <h1>Pour toi <span id="name">Binouchou</span> <span class="tag"></span> 💘</h1>
+      <p class="lead">Bienvenue dans **l'Escape Game du Love** 💘</p>
       <button class="btn" id="startBtn">Active la Love Bomb</button>
     </header>
 
     <section class="grid grid-2">
       <div class="card">
-        <h2>Notre bande‑son</h2>
+        <h2>Active la bande‑son</h2>
         <p class="muted"></p>
         <iframe title="Deezer" src="https://widget.deezer.com/widget/dark/album/727556231?autoplay=true" width="100%" height="180" frameborder="0" allowtransparency="true" allow="encrypted-media; clipboard-write"></iframe>
       </div>
@@ -157,7 +157,7 @@
         </div>
         <div class="controls">
           <button class="btn" id="playSeq">▶️ Lancer / Rejouer</button>
-          <span class="small">Astuce : observe le rythme puis imite‑le 💡</span>
+          <span class="small">Astuce : chante en même temps, ça aide💡</span>
         </div>
         <p id="res5" class="muted"></p>
       </div>
@@ -172,7 +172,7 @@
       <div id="stepFinal" class="step">
         <h3>Bravo Binouchou ! 🎉</h3>
         <p class="ok">Tu as débloqué la surprise :</p>
-        <p id="reveal" style="font-weight:700; font-size:18px">🎁 Ce soir, on a <em>réservé</em> au resto ! Tenue chic, sourire obligatoire ✨</p>
+        <p id="reveal" style="font-weight:700; font-size:18px">🎁 Vendredi, on a <em>réservé</em> au resto ! Tenue décontracte, sourire obligatoire ✨</p>
         <button class="btn" onclick="window.scrollTo({top:0, behavior:'smooth'})">Remonter en haut</button>
       </div>
     </section>
@@ -203,10 +203,10 @@
     function buildGrid(){ const grid=document.getElementById('grid'); grid.innerHTML=''; const cols=8, total=48; const target=Math.floor(Math.random()*total); const ty=Math.floor(target/cols), tx=target%cols; let tries=0; const maxT=CONFIG.escape.maxTries; for(let i=0;i<total;i++){ const cell=document.createElement('div'); cell.className='puzzle-cell'; cell.textContent='·'; cell.dataset.idx=i; grid.appendChild(cell); cell.addEventListener('click',()=>{ if(current!==0) return; tries++; const idx=+cell.dataset.idx; const y=Math.floor(idx/cols), x=idx%cols; const dist=Math.abs(x-tx)+Math.abs(y-ty); if(idx===target){ cell.classList.add('reveal'); cell.textContent='❤'; document.getElementById('res1').innerHTML=`<span class="ok">Trouvé en ${tries} essai(s) !</span>`; next(); } else { if(tries>=maxT){ document.getElementById('res1').innerHTML=`<span class="warn">Oups, ${maxT} essais écoulés. Nouvelle grille !</span>`; buildGrid(); } else { const hint=dist<=1?'🔥 Brûlant':dist<=2?'♨️ Chaud':dist<=4?'🌤️ Tiède':'❄️ Froid'; document.getElementById('res1').innerHTML=`${hint} — essai ${tries}/${maxT}`; cell.style.opacity=0.6; } } }); } }
 
     // Step2 date
-    function onCheckDate(){ const got=normalizeDate(document.getElementById('dateInput').value); const want=normalizeDate(CONFIG.escape.expectedDate); const res=document.getElementById('res2'); if(!got){ res.textContent='Indique une date 😊'; return; } if(got===want){ res.innerHTML='<span class="ok">Parfait !</span>'; next(); } else { res.innerHTML='<span class="warn">Presque… réessaie</span>'; } }
+    function onCheckDate(){ const got=normalizeDate(document.getElementById('dateInput').value); const want=normalizeDate(CONFIG.escape.expectedDate); const res=document.getElementById('res2'); if(!got){ res.textContent='Indique une date 😊'; return; } if(got===want){ res.innerHTML='<span class="ok">Parfait !</span>'; next(); } else { res.innerHTML='<span class="warn">Choquée ! est-ce que tu mérites vraiment la surprise..</span>'; } }
 
     // Step3 DH
-    function onCheckDH(){ const picked=document.querySelector('input[name="qdh"]:checked'); const res=document.getElementById('res3'); if(!picked){ res.textContent='Choisis une saison 😇'; return; } if(picked.value===CONFIG.escape.correctSeason){ res.innerHTML='<span class="ok">Exact : saison 4 !</span>'; launchConfetti(); next(); } else { res.innerHTML='<span class="warn">Pas tout à fait…</span>'; } }
+    function onCheckDH(){ const picked=document.querySelector('input[name="qdh"]:checked'); const res=document.getElementById('res3'); if(!picked){ res.textContent='Choisis une saison 😇'; return; } if(picked.value===CONFIG.escape.correctSeason){ res.innerHTML='<span class="ok">Exact : saison 4 !</span>'; launchConfetti(); next(); } else { res.innerHTML='<span class="warn">Bah alors.. il va falloir tout re-regarder !/span>'; } }
 
     // Step4 Star Wars
     function initStarWars(){ const space=document.getElementById('space'); space.innerHTML=''; const cols=12, rows=8, total=cols*rows, target=Math.floor(Math.random()*total); let tries=0, maxT=10; const ty=Math.floor(target/cols), tx=target%cols; for(let i=0;i<total;i++){ const d=document.createElement('div'); d.className='star'; d.dataset.idx=i; space.appendChild(d); d.addEventListener('click',()=>{ if(current!==3) return; tries++; const idx=+d.dataset.idx; const y=Math.floor(idx/cols), x=idx%cols; const man=Math.abs(x-tx)+Math.abs(y-ty); if(idx===target){ d.classList.add('hit'); document.getElementById('res4').innerHTML='<span class="ok">Tu as trouvé le sabre !</span>'; next(); } else { if(tries>=maxT){ document.getElementById('res4').innerHTML='<span class="warn">La Force s’épuise… nouvelle galaxie !</span>'; initStarWars(); } else { const hint=man<=1?'🔥 Très chaud':man<=2?'✨ Chaud':man<=4?'🌤️ Tiède':man<=6?'💧 Froid':'🧊 Hyperfroid'; document.getElementById('res4').innerHTML=`${hint} — essai ${tries}/${maxT}`; d.style.opacity=0.5; } } }); } }
